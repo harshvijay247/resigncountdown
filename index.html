@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resign Countdown</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#F4F4F6;--fg:#0A0A0B;--mute:#6B6B76;--card:#FFFFFF;--bd:rgba(10,10,11,.09);--cell:rgba(10,10,11,.06);--blue:#0099FF;--gold:#F5A524;--glow:rgba(0,153,255,.22);--btnfg:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--fg:#fff;--mute:#8E8E99;--card:#0F0F11;--bd:rgba(255,255,255,.09);--cell:rgba(255,255,255,.07);--glow:rgba(0,153,255,.30);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#000;--fg:#fff;--mute:#8E8E99;--card:#0F0F11;--bd:rgba(255,255,255,.09);--cell:rgba(255,255,255,.07);--glow:rgba(0,153,255,.30);color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 16px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;left:50%;top:-220px;width:900px;height:520px;transform:translateX(-50%);background:radial-gradient(closest-side,var(--glow),transparent);pointer-events:none}
+main{position:relative;max-width:1040px;margin:0 auto;padding:20px 16px 56px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 8px 8px 16px;border:1px solid var(--bd);border-radius:999px;background:var(--card);backdrop-filter:blur(12px)}
+nav b{font-weight:600;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+nav b i{width:10px;height:10px;border-radius:50%;background:var(--blue);box-shadow:0 0 12px var(--blue)}
+.pill{font-size:13px;color:var(--mute);padding:6px 12px;border-radius:999px;background:var(--cell);white-space:nowrap}
+.hero{text-align:center;padding:64px 0 40px}
+.badge{display:inline-block;font-size:13px;font-weight:500;padding:6px 14px;border-radius:999px;border:1px solid var(--bd);background:var(--card);color:var(--mute)}
+h1{font-weight:600;font-size:clamp(44px,10vw,104px);line-height:.98;letter-spacing:-.055em;margin:22px auto 16px;max-width:900px}
+h1 span{background:linear-gradient(180deg,#5CC2FF,var(--blue) 60%,#0066FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{margin:0 auto 28px;max-width:520px;color:var(--mute);font-size:18px;letter-spacing:-.01em}
+.btn{border:0;border-radius:999px;padding:16px 30px;font:600 17px Inter,system-ui,sans-serif;letter-spacing:-.01em;color:var(--btnfg);background:var(--blue);box-shadow:0 0 0 1px rgba(255,255,255,.15) inset,0 10px 40px -8px var(--blue);cursor:pointer;transition:transform .15s}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn:active:not(:disabled){transform:scale(.98)}
+.btn:disabled{background:var(--cell);color:var(--mute);box-shadow:none;cursor:default}
+.btn.treat{background:linear-gradient(135deg,#FFD166,var(--gold));color:#2B1A00;box-shadow:0 10px 40px -8px var(--gold)}
+.btn:focus-visible,.cell:focus-visible,.row button:focus-visible,textarea:focus-visible,.reset:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.msg{margin:18px auto 0;min-height:24px;color:var(--mute);font-size:15px;max-width:520px}
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{border:1px solid var(--bd);background:var(--card);border-radius:24px;padding:22px}
+.card.wide{grid-column:1/-1}
+.stat b{display:block;font-weight:600;font-size:48px;letter-spacing:-.05em;line-height:1}
+.stat span{color:var(--mute);font-size:14px}
+.card h2{margin:0 0 4px;font-weight:600;font-size:20px;letter-spacing:-.03em}
+.card p{margin:0;color:var(--mute);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(17,1fr);gap:5px;margin:18px 0 14px}
+.cell{aspect-ratio:1;border-radius:6px;border:0;background:var(--cell);padding:0;font-size:9px;color:var(--mute);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cell.done{background:var(--blue);color:#fff;box-shadow:0 0 12px -2px var(--blue)}
+.cell.miss{background:transparent;box-shadow:0 0 0 1px var(--bd) inset}
+.cell.today{box-shadow:0 0 0 2px var(--fg) inset}
+.cell.treat{background:transparent;box-shadow:0 0 0 1.5px var(--gold) inset;color:var(--gold);font-size:12px}
+.cell.treat.done{background:var(--gold);color:#2B1A00;box-shadow:0 0 14px -2px var(--gold)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--mute)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.resign{position:relative;overflow:hidden;text-align:center;padding:44px 22px}
+.resign::before{content:"";position:absolute;inset:auto 0 -60% 0;height:100%;background:radial-gradient(closest-side,var(--glow),transparent);opacity:.5}
+.resign.live::before{opacity:1}
+.resign>*{position:relative}
+.resign h2{font-size:clamp(28px,6vw,48px);letter-spacing:-.05em;margin-bottom:8px}
+.resign p{margin-bottom:22px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal.on{display:flex}
+.sheet{background:var(--card);border:1px solid var(--bd);border-radius:24px;padding:22px;max-width:580px;width:100%;max-height:92%;overflow:auto}
+.sheet h2{margin:0 0 12px;font-weight:600;font-size:24px;letter-spacing:-.04em}
+textarea{width:100%;min-height:240px;border-radius:16px;border:1px solid var(--bd);background:var(--cell);color:var(--fg);padding:14px;font:400 15px/1.55 Inter,system-ui,sans-serif;resize:vertical}
+.row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.row button{flex:1;min-width:130px;border:0;border-radius:999px;padding:13px;font:600 15px Inter,system-ui,sans-serif;cursor:pointer;background:var(--cell);color:var(--fg)}
+.row button.p{background:#0A66C2;color:#fff}
+.reset{display:block;margin:28px auto 0;background:none;border:0;color:var(--mute);font-size:13px;text-decoration:underline;cursor:pointer}
+@media(max-width:640px){.bento{grid-template-columns:1fr 1fr}.stat b{font-size:38px}.hero{padding:44px 0 28px}.grid{gap:3px}.card{border-radius:20px;padding:18px}.stat.s3{grid-column:1/-1}}
+@media(prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <nav><b><i></i>Resign Countdown</b><span class="pill" id="clock"></span></nav>
+
+  <section class="hero">
+    <span class="badge" id="badge">Loading</span>
+    <h1 id="h1">Wake up. <span>Press the button.</span></h1>
+    <p class="lead" id="lead"></p>
+    <button class="btn" id="btn" disabled>Loading…</button>
+    <div class="msg" id="msg" aria-live="polite"></div>
+  </section>
+
+  <section class="bento">
+    <div class="card stat"><b id="sDone">0</b><span>Days completed</span></div>
+    <div class="card stat"><b id="sLeft">102</b><span>Days remaining</span></div>
+    <div class="card stat s3"><b id="sStreak">0</b><span>Day streak</span></div>
+
+    <div class="card wide">
+      <h2>102 days to go</h2>
+      <p>22 Nov 2026 to 3 Mar 2027. Tap any day for details.</p>
+      <div class="grid" id="grid" role="list"></div>
+      <div class="legend">
+        <span><i style="background:var(--blue)"></i>Completed</span>
+        <span><i style="box-shadow:0 0 0 1px var(--bd) inset"></i>Missed</span>
+        <span><i style="box-shadow:0 0 0 2px var(--fg) inset"></i>Today</span>
+        <span><i style="box-shadow:0 0 0 1.5px var(--gold) inset"></i>Treat day</span>
+      </div>
+    </div>
+
+    <div class="card wide resign" id="resign">
+      <h2>4 March 2027</h2>
+      <p id="rp">Unlocks on resign day, once your salary has landed.</p>
+      <button class="btn" id="rbtn" disabled>Locked until 4 March</button>
+    </div>
+  </section>
+
+  <button class="reset" id="reset">Reset progress</button>
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+  <div class="sheet">
+    <h2 id="mt">Your LinkedIn post</h2>
+    <textarea id="post" aria-label="LinkedIn post text"></textarea>
+    <div class="row">
+      <button class="p" id="share">Share on LinkedIn</button>
+      <button id="copy">Copy text</button>
+      <button id="close">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var START=new Date(2026,10,22), TOTAL=102, MS=864e5, KEY="resign102.v1", done={};
+  var TREATS={51:"Treat day. You are halfway there. Do something good for yourself today.",102:"Final treat day. Tomorrow you resign. Make today a celebration."};
+  var $=function(i){return document.getElementById(i)};
+  function load(){try{var r=localStorage.getItem(KEY);if(r)done=JSON.parse(r)||{}}catch(e){done={}}}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}}
+  function todayIdx(){var n=new Date(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate());return Math.round((t-START)/MS)+1}
+  function dateOf(d){return new Date(START.getTime()+(d-1)*MS).toLocaleDateString("en-IN",{day:"numeric",month:"short"})}
+  function count(){return Object.keys(done).length}
+  function streak(t){var s=0,d=Math.min(t,TOTAL);if(!done[d])d--;while(d>=1&&done[d]){s++;d--}return s}
+
+  function render(){
+    var t=todayIdx(),c=count(),btn=$("btn");
+    $("clock").textContent=new Date().toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"});
+    var g=$("grid");g.innerHTML="";
+    for(var d=1;d<=TOTAL;d++){
+      var b=document.createElement("button");
+      b.className="cell"+(done[d]?" done":(d<t?" miss":""))+(d===t?" today":"")+(TREATS[d]?" treat":"");
+      b.textContent=TREATS[d]?"★":d;
+      b.setAttribute("role","listitem");
+      b.setAttribute("aria-label","Day "+d+", "+dateOf(d)+(done[d]?", completed":""));
+      b.dataset.d=d;g.appendChild(b);
+    }
+    $("sDone").textContent=c;
+    $("sLeft").textContent=Math.max(0,TOTAL-c);
+    $("sStreak").textContent=streak(t);
+    btn.classList.remove("treat");
+    if(t<1){
+      $("badge").textContent="Starts 22 Nov";
+      $("h1").innerHTML="Almost <span>time.</span>";
+      $("lead").textContent=(1-t)+" days until Day 1. Come back on the morning of 22 November.";
+      btn.disabled=true;btn.textContent="Not started yet";
+    }else if(t<=TOTAL){
+      $("badge").textContent="Day "+t+" of "+TOTAL+" · "+dateOf(t);
+      $("h1").innerHTML="Wake up. <span>Press the button.</span>";
+      $("lead").textContent=(TOTAL+1-t)+" days until resignation day.";
+      if(done[t]){btn.disabled=true;btn.textContent="Day "+t+" complete"}
+      else{btn.disabled=false;btn.textContent=TREATS[t]?"Claim your treat day":"I’m awake. Complete Day "+t;if(TREATS[t])btn.classList.add("treat")}
+    }else{
+      $("badge").textContent="Day 103 · 4 Mar";
+      $("h1").innerHTML="It’s <span>time.</span>";
+      $("lead").textContent="All 102 days are behind you. Scroll down for the final button.";
+      btn.disabled=true;btn.textContent="Countdown complete";
+    }
+    var r=$("resign"),rb=$("rbtn");
+    if(t>=TOTAL+1){r.classList.add("live");$("rp").textContent="Your salary should be in. Press the button to prepare your LinkedIn post.";rb.disabled=false;rb.textContent="Resign. Final button"}
+    else{r.classList.remove("live");rb.disabled=true;rb.textContent="Locked until 4 March"}
+  }
+
+  $("btn").onclick=function(){
+    var t=todayIdx();if(t<1||t>TOTAL||done[t])return;
+    done[t]=1;save();render();
+    $("msg").textContent=TREATS[t]||("Day "+t+" complete. "+(TOTAL-t)+" to go.");
+  };
+  $("grid").onclick=function(e){
+    var el=e.target.closest(".cell");if(!el)return;
+    var d=+el.dataset.d,t=todayIdx();
+    $("msg").textContent="Day "+d+" · "+dateOf(d)+(TREATS[d]?" · Treat day":"")+(d>t?" · upcoming":(done[d]?" · completed":" · missed"));
+  };
+
+  var POST="Today I’m putting in my papers.\n\n102 days ago I made a quiet decision: every morning, one small step toward building something of my own. No big announcement, no shortcuts, just showing up daily.\n\nI’m grateful for everything my current role and my colleagues taught me. It made this leap possible.\n\nThe next chapter starts now. I’ll share more soon.\n\n#NewBeginnings #Entrepreneurship #CareerGrowth";
+  $("rbtn").onclick=function(){$("post").value=POST;$("modal").classList.add("on")};
+  $("close").onclick=function(){$("modal").classList.remove("on")};
+  $("copy").onclick=function(){
+    var v=$("post").value,b=$("copy");
+    function ok(){b.textContent="Copied";setTimeout(function(){b.textContent="Copy text"},1500)}
+    try{navigator.clipboard.writeText(v).then(ok,function(){$("post").select();document.execCommand("copy");ok()})}
+    catch(e){$("post").select();try{document.execCommand("copy");ok()}catch(_){}}
+  };
+  $("share").onclick=function(){
+    var v=$("post").value;
+    try{navigator.clipboard.writeText(v)}catch(e){}
+    window.open("https://www.linkedin.com/feed/?shareActive=true&text="+encodeURIComponent(v),"_blank","noopener");
+  };
+  $("reset").onclick=function(){if(confirm("Reset all progress?")){done={};save();$("msg").textContent="";render()}};
+
+  load();render();setInterval(render,60000);
+})();
+</script>
+</body>
+</html>
